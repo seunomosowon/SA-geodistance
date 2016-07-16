@@ -12,6 +12,11 @@ This is only supported after a table command, stats command or other reporting c
 It currently fails if run against raw events.
 
 
+[Splunkbase](https://splunkbase.splunk.com/app/3232/#/details)
+
+[Github](https://github.com/seunomosowon/SA-geodistance)
+
+
 ## Notes
 
 * Events that do not have latitudes or longitudes, as is the output when geocoding private non-routed IP addresses,
@@ -51,11 +56,30 @@ and geocodes using the inbuilt iplocation search command.
 
 The relative distance in (Km) of each adjacent event is then computed using the `geodistance` command.
 
+S1:
 ```
-            "index=sample | rex field=relay \"\[(?<clientip>.*)\]\" |
-             iplocation clientip | table lat lon clientip |
-             geodistance latfield=lat longfield=lon output_field=distance miles=F"
+	index=sample | rex field=relay \"\[(?<clientip>.*)\]\" |
+	iplocation clientip | table lat lon clientip |
+	geodistance latfield=lat longfield=lon output_field=distance miles=F
 ```
+
+S2:
+```
+	index=sample | rex field=relay "\[(?<clientip>.*)\]" |
+		iplocation clientip | table clientip lat lon| search lat=* |
+		geodistance latfield=lat longfield=lon output_field=distance group_by=clientip
+```
+
+**PS**: the relative distance between all events with the same clientip will be zero
+
+
+S3:
+```
+	index=sample | rex field=relay "\[(?<clientip>.*)\]" |
+		iplocation clientip | table clientip lat lon from | search lat=* |
+	 	geodistance latfield=lat longfield=lon output_field=distance group_by=from | dedup from distance
+```
+
 
 
 ### Support
