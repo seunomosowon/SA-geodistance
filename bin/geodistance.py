@@ -2,6 +2,7 @@ import sys
 
 from splunklib.searchcommands import dispatch, ReportingCommand, Configuration, Option, validators
 from vincenty import vincenty
+from haversine import haversine
 
 
 @Configuration()
@@ -12,6 +13,7 @@ class GeoDistanceCommand(ReportingCommand):
 
     .. code-block::
         geodistance latfield=<field> longfield=<field> output_field=<field> miles=<bool> group_by=field_to_group_by
+                    haversine=<bool>
 
     ##Description
 
@@ -21,8 +23,6 @@ class GeoDistanceCommand(ReportingCommand):
     It can also compute the adjacent distances for a groups when the `group_by` is specified.
 
     ##Note:
-
-    *This does not currently work on raw events but works on the output of reporting commands or tables.
 
     *Events that do not have latitudes or longitudes, as is the output when geocoding private non-routable IP addresses,
      will be given a distance of 0.0. The next relative distance will still be based on last public address found.
@@ -37,35 +37,43 @@ class GeoDistanceCommand(ReportingCommand):
     ..code-block::
             "index=vpn | stats count by src_ip , user |
              iplocation src_ip | fields src_ip, user, lat, lon  |
-             geodistance latfield=lat longfield=lon output_field=distance miles=F group_by=user"
+             geodistance latfield=lat longfield=lon output_field=distance miles=F
+             group_by=user haversine=False"
 
     """
 
     latfield = Option(
         doc='''
-        **Syntax:** **latfield=***<fieldname>*
+        **Syntax:** **latfield=** *<fieldname>*
         **Description:** Name of the field that holds the latitude''',
         require=True, validate=validators.Fieldname())
     longfield = Option(
         doc='''
-        **Syntax:** **longfield=***<fieldname>*
+        **Syntax:** **longfield=** *<fieldname>*
         **Description:** Name of the field that holds the longitude''',
         require=True, validate=validators.Fieldname())
     group_by = Option(
         doc='''
-        **Syntax:** **group_by=***<fieldname>*
+        **Syntax:** **group_by=** *<fieldname>*
         **Description:** Name of the field to be used to categorize events when computing distances''',
         require=False, validate=validators.Fieldname())
     miles = Option(
         doc='''
-        **Syntax:** **miles=***<bool>*
+        **Syntax:** **miles=** *<bool>*
         **Description:** Name of the field that holds the longitude''',
         require=False, validate=validators.Boolean(), default=False)
     output_field = Option(
         doc='''
-        **Syntax:** **output_field=***<fieldname>*
+        **Syntax:** **output_field=** *<fieldname>*
         **Description:** Name of the field that will hold the relative distance returned in the output''',
         require=True, validate=validators.Fieldname())
+    use_haversine = Option(
+        name='haversine',
+        doc='''
+        **Syntax:** **haversine=** *<fieldname>*
+        **Description:** Name of the field that will hold the relative distance returned in the output''',
+        require=False, validate=validators.Boolean(), default=False)
+
 
     @Configuration()
     def map(self, events):
@@ -76,6 +84,7 @@ class GeoDistanceCommand(ReportingCommand):
         latitude = self.latfield
         longitude = self.longfield
         relative_distance = self.output_field
+        use_haversine = bool(self.use_haversine)
         if self.group_by:
             position_tracker = {}
             for event in events:
@@ -91,7 +100,10 @@ class GeoDistanceCommand(ReportingCommand):
                     if last_pos is None:
                         current[relative_distance] = 0.0
                     else:
-                        current[relative_distance] = vincenty(last_pos, current_pos, miles=bool(self.miles))
+                        if use_haversine:
+                            current[relative_distance] = haversine(last_pos, current_pos, miles=bool(self.miles))
+                        else:
+                            current[relative_distance] = vincenty(last_pos, current_pos, miles=bool(self.miles))
                     position_tracker[current[self.group_by]] = current_pos
                 yield current
         else:
@@ -105,7 +117,10 @@ class GeoDistanceCommand(ReportingCommand):
                     if last_pos is None:
                         current[relative_distance] = 0.0
                     else:
-                        current[relative_distance] = vincenty(last_pos, current_pos, miles=bool(self.miles))
+                        if use_haversine:
+                            current[relative_distance] = haversine(last_pos, current_pos, miles=bool(self.miles))
+                        else:
+                            current[relative_distance] = vincenty(last_pos, current_pos, miles=bool(self.miles))
                     last_pos = current_pos
                 yield current
 
