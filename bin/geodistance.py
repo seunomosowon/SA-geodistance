@@ -60,7 +60,7 @@ class GeoDistanceCommand(ReportingCommand):
     miles = Option(
         doc='''
         **Syntax:** **miles=** *<bool>*
-        **Description:** Name of the field that holds the longitude''',
+        **Description:** If set to true, this converts the distance to miles instead of km''',
         require=False, validate=validators.Boolean(), default=False)
     output_field = Option(
         doc='''
@@ -71,7 +71,7 @@ class GeoDistanceCommand(ReportingCommand):
         name='haversine',
         doc='''
         **Syntax:** **haversine=** *<fieldname>*
-        **Description:** Name of the field that will hold the relative distance returned in the output''',
+        **Description:** If set to true, this calculates the harversine distance instead of the vincenty distance''',
         require=False, validate=validators.Boolean(), default=False)
 
 

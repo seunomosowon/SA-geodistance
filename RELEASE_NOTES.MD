@@ -24,3 +24,10 @@ Fixed logging.conf
 ## v0.3.4
 - Updated permission of files
 - Added syntax to search UI
+
+## v0.3.5 / 0.3.6
+- Added icons
+- called icons to size
+
+## v0.3.7
+- Updated field descripition for longitude and haversine
