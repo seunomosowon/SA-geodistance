@@ -85,6 +85,18 @@ S3:
 ```
 
 
+#Enable debug logging
+
+To enable debugging for the geodistance command, add the following to SA-geodistance/local/logging.conf
+
+```
+[logger_GeoDistanceCommand]
+level = DEBUG
+```
+
+Logs are written to $SPLUNK_HOME/var/log/splunk/SA-geodistance.log
+
+
 ### Copyright - Haversine
 
 The Haversine 0.4.5 module is included from [Pypi](https://pypi.python.org/pypi/haversine) 

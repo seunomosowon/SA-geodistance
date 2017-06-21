@@ -3,6 +3,7 @@ import sys
 from splunklib.searchcommands import dispatch, ReportingCommand, Configuration, Option, validators
 from vincenty import vincenty
 from haversine import haversine
+from splunklib.searchcommands import environment
 
 
 @Configuration()
@@ -41,7 +42,6 @@ class GeoDistanceCommand(ReportingCommand):
              group_by=user haversine=False"
 
     """
-
     latfield = Option(
         doc='''
         **Syntax:** **latfield=** *<fieldname>*
@@ -74,6 +74,10 @@ class GeoDistanceCommand(ReportingCommand):
         **Description:** If set to true, this calculates the harversine distance instead of the vincenty distance''',
         require=False, validate=validators.Boolean(), default=False)
 
+    def __init__(self):
+        super(GeoDistanceCommand, self).__init__()
+        self._logger, self._logging_configuration = environment.configure_logging(self.__class__.__name__)
+        environment.splunklib_logger = self._logger
 
     @Configuration()
     def map(self, events):
@@ -85,12 +89,16 @@ class GeoDistanceCommand(ReportingCommand):
         longitude = self.longfield
         relative_distance = self.output_field
         use_haversine = bool(self.use_haversine)
+        self.logger.info("[%s] - Starting geodistance" % str(self.metadata.searchinfo.sid))
+        self.logger.debug("[%s] - Using parameters - %s" % (str(self.metadata.searchinfo.sid), str(self.metadata)))
         if self.group_by:
             position_tracker = {}
             for event in events:
                 current = event
                 if not (current[latitude] or current[longitude]):
                     current[relative_distance] = 0.0
+                    self.logger.debug("[%s] - Using distance=0 for private IPs or unknown coordinates. "
+                                      "Exclude if undesired." % str(self.metadata.searchinfo.sid))
                 else:
                     current_pos = (float(current[latitude]), float(current[longitude]))
                     if current[self.group_by] not in position_tracker.keys():
@@ -99,6 +107,9 @@ class GeoDistanceCommand(ReportingCommand):
                         last_pos = position_tracker[current[self.group_by]]
                     if last_pos is None:
                         current[relative_distance] = 0.0
+                        self.logger.debug(
+                            "[%s] - Initializing the first location with distance=0" % str(self.metadata.searchinfo.sid)
+                        )
                     else:
                         if use_haversine:
                             current[relative_distance] = haversine(last_pos, current_pos, miles=bool(self.miles))
@@ -112,17 +123,24 @@ class GeoDistanceCommand(ReportingCommand):
                 current = event
                 if not (current[latitude] or current[longitude]):
                     current[relative_distance] = 0.0
+                    self.logger.debug(
+                        "[%s] - Using distance=0 for private IPs or unknown coordinates. Exclude if undesired." % str(
+                            self.metadata.searchinfo.sid))
                 else:
                     current_pos = (float(current[latitude]), float(current[longitude]))
                     if last_pos is None:
                         current[relative_distance] = 0.0
+                        self.logger.debug("[%s] - Initializing the first location with distance=0" % str(
+                            self.metadata.searchinfo.sid))
                     else:
                         if use_haversine:
                             current[relative_distance] = haversine(last_pos, current_pos, miles=bool(self.miles))
                         else:
                             current[relative_distance] = vincenty(last_pos, current_pos, miles=bool(self.miles))
                     last_pos = current_pos
+                self.logger.debug(current)
                 yield current
+            self.logger.info("[%s] - Completed successfully." % str(self.metadata.searchinfo.sid))
 
 
 dispatch(GeoDistanceCommand, sys.argv, sys.stdin, sys.stdout, __name__)

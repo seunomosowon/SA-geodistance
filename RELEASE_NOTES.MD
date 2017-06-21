@@ -31,3 +31,8 @@ Fixed logging.conf
 
 ## v0.3.7
 - Updated field descripition for longitude and haversine
+
+## v0.3.8
+- Fixed logging to separate file
+- Added support for debug logging and documentation for this on README.md
+- Changed to v2 command style
