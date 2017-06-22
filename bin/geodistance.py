@@ -76,7 +76,6 @@ class GeoDistanceCommand(ReportingCommand):
 
     def __init__(self):
         super(GeoDistanceCommand, self).__init__()
-        self._logger, self._logging_configuration = environment.configure_logging(self.__class__.__name__)
         environment.splunklib_logger = self._logger
 
     @Configuration()
@@ -89,7 +88,7 @@ class GeoDistanceCommand(ReportingCommand):
         longitude = self.longfield
         relative_distance = self.output_field
         use_haversine = bool(self.use_haversine)
-        self.logger.info("[%s] - Starting geodistance" % str(self.metadata.searchinfo.sid))
+        self.logger.info("[%s] - Starting geodistance instance" % str(self.metadata.searchinfo.sid))
         self.logger.debug("[%s] - Using parameters - %s" % (str(self.metadata.searchinfo.sid), str(self.metadata)))
         if self.group_by:
             position_tracker = {}
