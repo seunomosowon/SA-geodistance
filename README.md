@@ -270,6 +270,10 @@ This app supports in-place upgrade of older verisons. Alternatively, remove olde
 
 ### Copyright & License
 
+#### Copyright - Splunk SDK for Python
+
+The Splunk SDK for Python is licensed under the Apache License 2.0 which can be found at: (https://www.apache.org/licenses/LICENSE-2.0)
+
 #### Copyright - Haversine
 
 The Haversine 0.4.5 module is included from [Pypi](https://pypi.python.org/pypi/haversine)
@@ -297,5 +301,5 @@ THE SOFTWARE.
 
 #### License
 
-This software is licensed under the [Splunk End User License Agreement for Third-Party Content](https://d38o4gzaohghws.cloudfront.net/static/misc/eula.html)
+This support add-on is licensed under the [Splunk End User License Agreement for Third-Party Content](https://d38o4gzaohghws.cloudfront.net/static/misc/eula.html)
 license agreement.
