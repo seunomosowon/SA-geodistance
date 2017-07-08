@@ -64,8 +64,6 @@ SA-geodistance includes the following new features:
 
 Version 1.0 of the SA-geodistance doesnt introduce any fixes:
 
-[comment]: <issue description>
-
 
 ##### Known issues
 
@@ -79,15 +77,15 @@ Available at:  and
 MIT licensed .
 
 - [Vincenty 0.1.4](https://pypi.python.org/pypi/vincenty/0.1.4), (public domain)
-- [haversine 0.4.5](https://pypi.python.org/pypi/haversine), <https://github.com/mapado/haversine/blob/master/LICENSE>
-- [Splunk SDK, 1.6.0] (http://dev.splunk.com/python), <https://www.apache.org/licenses/LICENSE-2.0>
+- [haversine 0.4.5](https://pypi.python.org/pypi/haversine), (https://github.com/mapado/haversine/blob/master/LICENSE)
+- [Splunk SDK, 1.6.0] (http://dev.splunk.com/python), (https://www.apache.org/licenses/LICENSE-2.0)
 
 
 ##### Support and resources
 
 **Questions and answers**
 
-Access questions and answers specific to the SA-geodistance at <https://answers.splunk.com/>.
+Access questions and answers specific to the SA-geodistance at (https://answers.splunk.com/).
 
 **Support**
 
@@ -96,7 +94,7 @@ This Splunk support add-on is community / developer supported.
 Questions asked on Splunk answers will be answered either by the community of users or by the developer when available.
 All support questions should include the version of Splunk and OS.
 
-You can also contact the developer directly form the app page <https://splunkbase.splunk.com/app/3232/>.
+You can also contact the developer directly via [Splunkbase] (https://splunkbase.splunk.com/app/3232/).
 Feedback and feature requests can also be sent via splunkbase.
 
 Issues can also be submitted at the [SA-geodistance repo via on Github] (https://github.com/seunomosowon/SA-geodistance/issues)
@@ -155,13 +153,13 @@ Because this add-on runs on Splunk Enterprise, all of the [Splunk Enterprise sys
 
 #### Download
 
-Download the SA-geodistance at <https://splunkbase.splunk.com/app/3232/>.
+Download the SA-geodistance at [Splunkbase](https://splunkbase.splunk.com/app/3232/) OR [GitHub](https://github.com/seunomosowon/SA-geodistance).
 
 #### Installation steps
 
 To install and configure this app on your supported standalone platform, do one of the following:
 
-- Install on a standalone search head via the GUI <https://docs.splunk.com/Documentation/AddOns/released/Overview/Singleserverinstall>
+- Install on a standalone search head via the GUI (https://docs.splunk.com/Documentation/AddOns/released/Overview/Singleserverinstall)
 - Extract the app to ```$SPLUNK_HOME/etc/apps/``` and restart Splunk
 
 For a supported distributed environment, follow the steps to install the SA-geodistance on the search head only.
