@@ -78,7 +78,7 @@ MIT licensed .
 
 - [Vincenty 0.1.4](https://pypi.python.org/pypi/vincenty/0.1.4), (public domain)
 - [haversine 0.4.5](https://pypi.python.org/pypi/haversine), (https://github.com/mapado/haversine/blob/master/LICENSE)
-- [Splunk SDK, 1.6.0] (http://dev.splunk.com/python), (https://www.apache.org/licenses/LICENSE-2.0)
+- [Splunk SDK, 1.6.0](http://dev.splunk.com/python), (https://www.apache.org/licenses/LICENSE-2.0)
 
 
 ##### Support and resources
