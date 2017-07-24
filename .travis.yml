@@ -14,39 +14,38 @@ before_install:
   - docker pull splunk/splunk
   # Add DOCKER to iptables, 1/10 times this is needed, force 0 exit status
   - sudo iptables -N DOCKER || true
+  - sudo iptables -I INPUT -p tcp --dports $SPLKMGMT -j ACCEPT || truee
   # Start Docker container
-  - docker create --name autobuild --hostname autobuild -v /opt/splunk/etc/apps
-    -e "SPLUNK_START_ARGS=--accept-license" -e "SPLUNK_USER=root" -p "8089:8089"
+  - docker create --name autobuild_$SPLKMGMT --hostname autobuild -v /opt/splunk/etc/apps
+    -e "SPLUNK_START_ARGS=--accept-license" -p "$SPLKMGMT:8089"
     -e SPLUNK_CMD='edit user admin -password random_password -role admin -auth admin:changeme'
     splunk/splunk:$SPLUNK_VERSION
   - echo "Starting container"
-  - docker start autobuild
+  - docker start autobuild_$SPLKMGMT
   - for i in `seq 0 5 100`;
-    do if curl --fail -k -u admin:random_password https://localhost:8089/services/server/info &> /dev/null;
+    do if curl --fail -k -u admin:random_password https://localhost:$SPLKMGMT/services/server/info &> /dev/null;
     then break;
     fi;
     echo "Waited $i seconds for container to start" ; sleep 5;
     done
-  - # echo "changing default admin password"
-  - # docker exec autobuild entrypoint.sh splunk edit user admin -password random_password -role admin -auth admin:changeme
 
 install:
   # Could copy the TA during the setup above
   - echo "Installing TA"
-  - docker cp $TRAVIS_BUILD_DIR autobuild:/opt/splunk/etc/apps/
+  - docker cp $TRAVIS_BUILD_DIR autobuild_$SPLKMGMT:/opt/splunk/etc/apps/
   # Restart Splunk after coping add-on
   - echo "Restarting splunk"
-  - docker exec autobuild entrypoint.sh splunk restart
+  - docker exec autobuild_$SPLKMGMT entrypoint.sh splunk restart
 
 script:
   - echo "Checking if TA was installed successfully and enabled"
-  - curl --fail -k -u admin:random_password https://localhost:8089/services/apps/local/SA-geodistance | grep "\"disabled\">0" &>/dev/null
+  - curl --fail -k -u admin:random_password https://localhost:$SPLKMGMT/services/apps/local/SA-geodistance | grep "\"disabled\">0" &>/dev/null
   - echo "Checking if modular input is not broken"
-  - curl --fail -k -u admin:random_password https://localhost:8089/services/data//commands/geodistance |grep "\"disabled\">0" &> /dev/null
-  - curl -f -k -u admin:random_password -k https://localhost:8089/services/search/jobs/export --data-urlencode search="| makeresults | 
+  - curl --fail -k -u admin:random_password https://localhost:$SPLKMGMT/services/data//commands/geodistance |grep "\"disabled\">0" &> /dev/null
+  - curl -f -k -u admin:random_password -k https://localhost:$SPLKMGMT/services/search/jobs/export --data-urlencode search="| makeresults | 
     eval data=\"125.89.78.6,fred;88.191.83.82,fred\" | makemv delim=\";\" data | mvexpand data | rex field=data \"(?<clientip>[\d\.]+),(?<user>[\w]+)\" |
     iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance group_by=user| table clientip user City distance" -d output_mode=csv
 
 env:
-  - "SPLUNK_VERSION=6.6.1"
-  - "SPLUNK_VERSION=latest"
+  - "SPLUNK_VERSION=6.6.1 SPLKMGMT=9900"
+  - "SPLUNK_VERSION=latest SPLKMGMT=9901"
