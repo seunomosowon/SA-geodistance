@@ -62,12 +62,14 @@ SA-geodistance includes the following new features:
 
 ##### Fixed issues
 
-Version 1.0 of the SA-geodistance doesnt introduce any fixes:
+Version 1.0.1 includes a correction to the documentation. The distance returned by default is in kilometers.
+
+Version 1.0 of the SA-geodistance doesnt introduce any fixes.
 
 
 ##### Known issues
 
-There are no known issues in version 1.0 of the SA-geodistance
+There are no known issues in version 1.0.x of the SA-geodistance
 
 
 ##### Third-party software attributions
@@ -180,8 +182,8 @@ For Splunk cloud installations, follow the instructions present at the following
                 miles=<bool> group_by=<group> haversine=<bool>
 </code>
 
-This app can return distances as miles (default) or kilometer.  To return distances in kilometer,
-pass the `miles=F` as an argument to the command.
+This app can return distances as miles or kilometer (default).  To return distances in miles,
+pass the `miles=True` as an argument to the command.
 
 It computes the vincenty distances by default. To use haversine instead, add the paramter `haversine=True` or `haversine=T`
 
@@ -220,7 +222,7 @@ S1:
 ```
 	index=sample | rex field=relay \"\[(?<clientip>.*)\]\" |
 	iplocation clientip | table lat lon clientip |
-	geodistance latfield=lat longfield=lon output_field=distance miles=F
+	geodistance latfield=lat longfield=lon output_field=distance miles=True
 ```
 
 S2:
