@@ -1,8 +1,10 @@
+import os
 import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib"))
 from splunklib.searchcommands import dispatch, ReportingCommand, Configuration, Option, validators
 from vincenty import vincenty
-from haversine import haversine
+from haversine import haversine, Unit
 from splunklib.searchcommands import environment
 
 
@@ -90,6 +92,7 @@ class GeoDistanceCommand(ReportingCommand):
         use_haversine = bool(self.use_haversine)
         self.logger.info("[%s] - Starting geodistance instance" % str(self.metadata.searchinfo.sid))
         self.logger.debug("[%s] - Using parameters - %s" % (str(self.metadata.searchinfo.sid), str(self.metadata)))
+        haversine_unit = Unit.MILES if self.miles else Unit.KILOMETERS
         if self.group_by:
             position_tracker = {}
             for event in events:
@@ -111,7 +114,7 @@ class GeoDistanceCommand(ReportingCommand):
                         )
                     else:
                         if use_haversine:
-                            current[relative_distance] = haversine(last_pos, current_pos, miles=bool(self.miles))
+                            current[relative_distance] = haversine(last_pos, current_pos, unit=haversine_unit)
                         else:
                             current[relative_distance] = vincenty(last_pos, current_pos, miles=bool(self.miles))
                     position_tracker[current[self.group_by]] = current_pos
@@ -133,9 +136,9 @@ class GeoDistanceCommand(ReportingCommand):
                             self.metadata.searchinfo.sid))
                     else:
                         if use_haversine:
-                            current[relative_distance] = haversine(last_pos, current_pos, miles=bool(self.miles))
+                            current[relative_distance] = haversine(last_pos, current_pos, unit=haversine_unit)
                         else:
-                            current[relative_distance] = vincenty(last_pos, current_pos, miles=bool(self.miles))
+                            current[relative_distance] = vincenty(last_pos, current_pos, miles=self.miles)
                     last_pos = current_pos
                 self.logger.debug(current)
                 yield current
