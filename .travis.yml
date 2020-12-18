@@ -30,20 +30,20 @@ install:
 # Could copy the SA during the setup above
 - echo "Installing SA"
 - docker cp $TRAVIS_BUILD_DIR autobuild_$SPLKMGMT:/opt/splunk/etc/apps/
+- docker exec autobuild_$SPLKMGMT sudo chown -R splunk.splunk /opt/splunk/etc/apps/
 # Restart Splunk after coping add-on
-- docker exec autobuild_$SPLKMGMT sudo chown -R splunk.splunk /opt/splunk/etc/apps/SA-geodistance
 - echo "`date -u` - Restarting splunk"
 - curl -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/server/control/restart -X POST &>/dev/null
 - sleep 20
 
 script:
 - echo "`date -u` - Checking if TA was installed successfully and enabled"
-- curl --fail -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/apps/local/SA-geodistance | grep "\"disabled\">0" &>/dev/null
+- curl --fail -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/apps/local/SA-geodistance | grep -q '"disabled">0'
 - echo "`date -u` - Checking if modular input is not broken"
-- curl --fail -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/data/commands/geodistance |grep "\"disabled\">0" &> /dev/null
-- curl -f -k -u admin:$RANDOM_PASSWORD -k https://localhost:$SPLKMGMT/services/search/jobs/export --data-urlencode search="| makeresults |
-  eval data=\"125.89.78.6,fred;88.191.83.82,fred\" | makemv delim=\";\" data | mvexpand data | rex field=data \"(?<clientip>[\d\.]+),(?<user>[\w]+)\" |
-  iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance group_by=user| table clientip user City distance" -d output_mode=raw
+- curl --fail -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/data/commands/geodistance |grep -q '"disabled">0'
+- curl --get -f -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/search/jobs/export --data-urlencode search='| makeresults |
+  eval data="125.89.78.6,fred;88.191.83.82,fred" | makemv delim=";" data | mvexpand data | rex field=data "(?<clientip>[\d\.]+),(?<user>[\w]+)" |
+  iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance group_by=user | table clientip user City distance ' -d output_mode=raw
 
 env:
 - "SPLUNK_VERSION=7.2 SPLKMGMT=9990"
