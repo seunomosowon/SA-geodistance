@@ -27,8 +27,8 @@ before_install:
   sleep 5 ; if [ "100" -eq "$i" ]; then echo "Splunk not started, exiting..."; exit -1 ; fi ; done
 
 install:
-# Could copy the TA during the setup above
-- echo "Installing TA"
+# Could copy the SA during the setup above
+- echo "Installing SA"
 - docker cp $TRAVIS_BUILD_DIR autobuild_$SPLKMGMT:/opt/splunk/etc/apps/
 # Restart Splunk after coping add-on
 - docker exec autobuild_$SPLKMGMT sudo chown -R splunk.splunk /opt/splunk/etc/apps/SA-geodistance
@@ -46,7 +46,6 @@ script:
   iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance group_by=user| table clientip user City distance" -d output_mode=raw
 
 env:
-- "SPLUNK_VERSION=6.6 SPLKMGMT=9900"
 - "SPLUNK_VERSION=7.2 SPLKMGMT=9990"
 - "SPLUNK_VERSION=7.3 SPLKMGMT=9991"
 - "SPLUNK_VERSION=8.0 SPLKMGMT=9992"
