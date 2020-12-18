@@ -44,10 +44,10 @@ script:
 - curl -s -f -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/search/jobs/export --data-urlencode search='| makeresults |
   eval data="125.89.78.6,fred;88.191.83.82,fred" | makemv delim=";" data | mvexpand data | rex field=data "(?<clientip>[\d\.]+),(?<user>[\w]+)" |
   iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance group_by=user | table clientip user City distance ' -d output_mode=csv
-- curl -s -f -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/search/jobs/export --data-urlencode search='| makeresults |
+- curl -f -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/search/jobs/export --data-urlencode search='| makeresults |
   eval data="125.89.78.6,fred;88.191.83.82,fred;8.8.8.8,paul" | makemv delim=";" data | mvexpand data | rex field=data "(?<clientip>[\d\.]+),(?<user>[\w]+)" |
   iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance miles=T | table clientip user City distance ' -d output_mode=csv
-- curl -s -f -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/search/jobs/export --data-urlencode search='| makeresults |
+- curl --get -s -k -u admin:$RANDOM_PASSWORD https://localhost:$SPLKMGMT/services/search/jobs/export --data-urlencode search='| makeresults |
   eval data="125.89.78.6,fred;88.191.83.82,fred;8.8.8.8,paul" | makemv delim=";" data | mvexpand data | rex field=data "(?<clientip>[\d\.]+),(?<user>[\w]+)" |
   iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance miles=F | table clientip user City distance ' -d output_mode=csv
 
