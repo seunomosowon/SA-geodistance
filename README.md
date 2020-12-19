@@ -26,8 +26,8 @@
 
 | Author | Oluwaseun Remi-Omosowon |
 | --- | --- |
-| App Version | 1.0 |
-| Vendor Products | <ul><li>vincenty-0.1.4 - public domain license </li><li>haversine-0.4.5 - MIT License</li><li>SDK for Python 1.6.0</li></ul> |
+| App Version | 1.1.0 |
+| Vendor Products | <ul><li>vincenty-0.1.4 - public domain license </li><li>haversine-2.3.0 - MIT License</li><li>SDK for Python 1.6.14</li></ul> |
 | Support-addon | This add-on only needs to be installed on the search heads only (Either standalone or dedicated/clustered)|
 
 The SA-geodistance allows a Splunk® Enterprise user to compute the relative vincenty/haversine distances of
@@ -36,19 +36,20 @@ adjacent events given their latitudes and longitudes.
 ##### Scripts and binaries
 
 Includes:
-- Splunk SDK for Python (1.6.0)
-- vincenty 0.1.4 - supports the calculation of vincenty distances which is used by default
-- haversine 0.4.5 - Supports the use of haversine
+- Splunk SDK for Python (1.6.14)
+- vincenty v0.1.4 - supports the calculation of vincenty distances which is used by default
+- haversine v2.3.0 - Supports the use of haversine
 - geodistance.py : This is the splunk reporting command introduced by this app
+- enum34 v1.1.10 : Required by on Python 2.4-3.3 when using haversine
 
 
 #### Release notes
 
 ##### About this release
 
-Version 1.0 of the SA-geodistance is compatible with:
+Version 1.1.0 of the SA-geodistance is compatible with:
 
-| Splunk Enterprise versions | 6.x |
+| Splunk Enterprise versions | 6.x, 7.x, 8.x |
 | --- | --- |
 | CIM | Not Applicable |
 | Platforms | Platform independent |
@@ -62,25 +63,25 @@ SA-geodistance includes the following new features:
 
 ##### Fixed issues
 
-Version 1.0.1 includes a correction to the documentation. The distance returned by default is in kilometers.
+Version 1.1.0 includes support for Python v3 and Splunk v8.x. The distance returned by default is in kilometers.
 
 Version 1.0 of the SA-geodistance doesnt introduce any fixes.
 
 
 ##### Known issues
 
-There are no known issues in version 1.0.x of the SA-geodistance
+There are no known issues in version 1.1.x of the SA-geodistance
 
 
 ##### Third-party software attributions
 
-Version 1.0 of the SA-geodistance incorporates the following third-party software or libraries.
+Version 1.1.0 of the SA-geodistance incorporates the following third-party software or libraries.
 Available at:  and
 MIT licensed .
 
 - [Vincenty 0.1.4](https://pypi.python.org/pypi/vincenty/0.1.4), (public domain)
-- [haversine 0.4.5](https://pypi.python.org/pypi/haversine), (https://github.com/mapado/haversine/blob/master/LICENSE)
-- [Splunk SDK, 1.6.0](http://dev.splunk.com/python), (https://www.apache.org/licenses/LICENSE-2.0)
+- [haversine 2.3.0](https://pypi.python.org/pypi/haversine), (https://github.com/mapado/haversine/blob/master/LICENSE)
+- [Splunk SDK, 1.6.14](http://dev.splunk.com/python), (https://www.apache.org/licenses/LICENSE-2.0)
 
 
 ##### Support and resources
@@ -102,6 +103,12 @@ Feedback and feature requests can also be sent via splunkbase.
 Issues can also be submitted at the [SA-geodistance repo via on Github] (https://github.com/seunomosowon/SA-geodistance/issues)
 
 ##### Older Releases
+
+* v1.0.1
+    - Update to documentation
+    
+* v1.0
+    - Passed Splunk app certification
 
 * v0.3.8
     - Added logging support
@@ -278,7 +285,7 @@ The Splunk SDK for Python is licensed under the Apache License 2.0 which can be 
 
 #### Copyright - Haversine
 
-The Haversine 0.4.5 module is included from [Pypi](https://pypi.python.org/pypi/haversine)
+The Haversine 2.3.0 module is included from [Pypi](https://pypi.python.org/pypi/haversine)
 and is licensed under MIT which permits its use and distribution given the notice below.
 
 Copyright (c) 2015 Mapado
