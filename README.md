@@ -60,12 +60,13 @@ Version 1.1.0 of the SA-geodistance is compatible with:
 SA-geodistance includes the following new features:
 
 - Diagnostic Logging
+- Python v3 / Splunk v8.x support
 
 ##### Fixed issues
 
 Version 1.1.0 includes support for Python v3 and Splunk v8.x. The distance returned by default is in kilometers.
 
-Version 1.0 of the SA-geodistance doesnt introduce any fixes.
+Version 1.1.0 of the SA-geodistance doesnt introduce any fixes.
 
 
 ##### Known issues
