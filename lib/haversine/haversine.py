@@ -1,6 +1,8 @@
 from math import radians, cos, sin, asin, sqrt
-from enum import Enum
-
+try:
+    from enum import Enum
+except ImportError as e:
+    from py2.enum import Enum
 
 # mean earth radius - https://en.wikipedia.org/wiki/Earth_radius#Mean_radius
 _AVG_EARTH_RADIUS_KM = 6371.0088

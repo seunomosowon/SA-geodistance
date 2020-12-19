@@ -37,18 +37,19 @@ adjacent events given their latitudes and longitudes.
 
 Includes:
 - Splunk SDK for Python (1.6.14)
-- vincenty 0.1.4 - supports the calculation of vincenty distances which is used by default
-- haversine 2.3.0 - Supports the use of haversine
+- vincenty v0.1.4 - supports the calculation of vincenty distances which is used by default
+- haversine v2.3.0 - Supports the use of haversine
 - geodistance.py : This is the splunk reporting command introduced by this app
+- enum34 v1.1.10 : Required by on Python 2.4-3.3 when using haversine
 
 
 #### Release notes
 
 ##### About this release
 
-Version 1.0 of the SA-geodistance is compatible with:
+Version 1.1.0 of the SA-geodistance is compatible with:
 
-| Splunk Enterprise versions | 6.x |
+| Splunk Enterprise versions | 6.x, 7.x, 8.x |
 | --- | --- |
 | CIM | Not Applicable |
 | Platforms | Platform independent |
