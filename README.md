@@ -26,7 +26,7 @@
 
 | Author | Oluwaseun Remi-Omosowon |
 | --- | --- |
-| App Version | 1.1.0 |
+| App Version | 1.2.0 |
 | Vendor Products | <ul><li>vincenty-0.1.4 - public domain license </li><li>haversine-2.3.0 - MIT License</li><li>SDK for Python 1.6.14</li></ul> |
 | Support-addon | This add-on only needs to be installed on the search heads only (Either standalone or dedicated/clustered)|
 
@@ -47,7 +47,7 @@ Includes:
 
 ##### About this release
 
-Version 1.1.0 of the SA-geodistance is compatible with:
+Version 1.2.0 of the SA-geodistance is compatible with:
 
 | Splunk Enterprise versions | 6.x, 7.x, 8.x |
 | --- | --- |
@@ -64,19 +64,19 @@ SA-geodistance includes the following new features:
 
 ##### Fixed issues
 
-Version 1.1.0 includes support for Python v3 and Splunk v8.x. The distance returned by default is in kilometers.
+This version includes support for Python v3 and Splunk v8.x. The distance returned by default is in kilometers.
 
-Version 1.1.0 of the SA-geodistance doesnt introduce any fixes.
+This version of the SA-geodistance doesnt introduce any fixes and simply updates the permission of python files so it's not executable.
 
 
 ##### Known issues
 
-There are no known issues in version 1.1.x of the SA-geodistance
+There are no known issues in this version.
 
 
 ##### Third-party software attributions
 
-Version 1.1.0 of the SA-geodistance incorporates the following third-party software or libraries.
+This version of the app incorporates the following third-party software or libraries.
 Available at:  and
 MIT licensed .
 
