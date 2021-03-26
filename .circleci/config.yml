@@ -1,0 +1,110 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  appinspect-compliance:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/${CIRCLE_PROJECT_REPONAME}
+    steps:
+      - checkout
+      - run:
+          name: Download appinspect
+          command: |
+            cd ~
+            curl -Ls https://download.splunk.com/misc/appinspect/splunk-appinspect-latest.tar.gz -o appinspect-lastest.tar.gz
+            mkdir appinspect-latest
+            tar -zxvf appinspect-lastest.tar.gz -C appinspect-latest --strip-components=1
+      - run:
+          name: install appinspect
+          working_directory: ~/appinspect-latest
+          command: |
+            rm -rf venv
+            sudo pip install --upgrade pip setuptools
+            sudo pip install virtualenv
+            virtualenv --clear venv
+            source venv/bin/activate
+            pip install .
+      - run:
+          name: run appinspect
+          working_directory: ~
+          command: |
+            cd ~
+            rm -rf ${CIRCLE_PROJECT_REPONAME}/.git
+            rm -rf ${CIRCLE_PROJECT_REPONAME}/.circleci
+            rm -rf ${CIRCLE_PROJECT_REPONAME}/.gitignore
+            rm -rf ${CIRCLE_PROJECT_REPONAME}/.travis.yml
+            rm -rf ${CIRCLE_PROJECT_REPONAME}/.gitattributes
+            mkdir dist
+            tar -zcvf dist/${CIRCLE_PROJECT_REPONAME}.tar.gz ${CIRCLE_PROJECT_REPONAME}
+            cd appinspect-latest
+            source venv/bin/activate
+            splunk-appinspect inspect ~/dist/${CIRCLE_PROJECT_REPONAME}.tar.gz --included-tags=cloud --included-tags appapproval
+  functional-tests:
+    parameters:
+      MATRIX_IMAGE_VERSION:
+        type: string
+      SPLKMGMT:
+        type: integer
+    working_directory: ~
+    docker:
+      - image: circleci/python:3
+    steps:
+      - run:
+          name: Make Directories
+          command: |
+            mkdir SA-geodistance
+      - checkout:
+          path: "~/SA-geodistance"
+      - setup_remote_docker
+      - run:
+          name: Run Splunk Container
+          command: |
+            docker run -d --name autobuild --hostname autobuild -v /opt/splunk/etc/apps -e "SPLUNK_PASSWORD=${SPLUNK_PASSWD}" -e "SPLUNK_START_ARGS=--accept-license" -p "<< parameters.SPLKMGMT >>:8089" -e "SPLUNK_USER=splunk" splunk/splunk:<< parameters.MATRIX_IMAGE_VERSION >>
+      - run:
+          name: Test Splunk Availability
+          command: |
+            sleep 60
+            docker exec autobuild curl -s -o /dev/null -w "%{http_code}" --retry 10 --retry-connrefused -k -u admin:${SPLUNK_PASSWD} https://autobuild:<< parameters.SPLKMGMT >>/services/server/info
+      - run:
+          name: Install TA
+          command: |
+            docker ps -a
+            docker cp ~/SA-geodistance autobuild:/opt/splunk/etc/apps/
+            docker exec autobuild sudo chown -R splunk.splunk /opt/splunk/etc/apps/SA-geodistance/
+      - run:
+          name: Restart Splunk
+          command: |
+            docker exec autobuild curl -k -u admin:${SPLUNK_PASSWD} https://autobuild:<< parameters.SPLKMGMT >>/services/server/control/restart -X POST &>/dev/null
+            sleep 15
+      - run:
+          name: Test Splunk App Configuration
+          command: |
+            for i in `seq 0 5 100`;
+            do if docker exec autobuild curl --retry 10 --retry-connrefused --fail -k -u admin:${SPLUNK_PASSWD} https://autobuild:<< parameters.SPLKMGMT >>/services/server/info &> /dev/null ;
+              then break; else echo "`date -u` - Waited $i seconds for container to start" ; sleep 5 ; fi;
+              if [ 100 -eq "$i" ]; then exit -1 ; fi ;
+            done
+            echo "`date -u` - Checking if app was installed successfully and enabled"
+            docker exec autobuild curl -s --fail -k -u admin:${SPLUNK_PASSWD} https://autobuild:<< parameters.SPLKMGMT >>/services/apps/local/SA-geodistance | grep "\"disabled\">0"
+            echo "`date -u` - Checking if Search command is not broken"
+            docker exec autobuild curl -s --fail -k -u admin:${SPLUNK_PASSWD} https://autobuild:<< parameters.SPLKMGMT >>/services/data/commands/geodistance |grep -q '"disabled">0'
+      - run:
+          name: Test search command
+          command: |
+            docker exec autobuild curl --retry 10 --retry-connrefused -s --get -k -u admin:${SPLUNK_PASSWD} https://autobuild:<< parameters.SPLKMGMT >>/services/search/jobs/export --data-urlencode search='| makeresults | eval data="125.89.78.6,fred;88.191.83.82,fred" | makemv delim=";" data | mvexpand data | rex field=data "(?<clientip>[\d\.]+),(?<user>[\w]+)" | iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance group_by=user | table clientip user City distance' -d output_mode=csv
+            docker exec autobuild curl --retry 10 --retry-connrefused -s --get -k -u admin:${SPLUNK_PASSWD} https://autobuild:<< parameters.SPLKMGMT >>/services/search/jobs/export --data-urlencode search='| makeresults | eval data="125.89.78.6,fred;88.191.83.82,fred;8.8.8.8,paul" | makemv delim=";" data | mvexpand data | rex field=data "(?<clientip>[\d\.]+),(?<user>[\w]+)" | iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance miles=T | table clientip user City distance ' -d output_mode=csv
+            docker exec autobuild curl --retry 10 --retry-connrefused -s --get -k -u admin:${SPLUNK_PASSWD} https://autobuild:<< parameters.SPLKMGMT >>/services/search/jobs/export --data-urlencode search='| makeresults | eval data="125.89.78.6,fred;88.191.83.82,fred;8.8.8.8,paul" | makemv delim=";" data | mvexpand data | rex field=data "(?<clientip>[\d\.]+),(?<user>[\w]+)" | iplocation clientip |  geodistance latfield=lat longfield=lon output_field=distance miles=F | table clientip user City distance ' -d output_mode=csv
+
+workflows:
+  all-together:
+    jobs:
+      - appinspect-compliance
+      - functional-tests:
+          name: test-v<< matrix.MATRIX_IMAGE_VERSION >>
+          matrix:
+            parameters:
+              MATRIX_IMAGE_VERSION: [ latest, "7.3", "7.2" ]
+              SPLKMGMT: [ 8089 ]
