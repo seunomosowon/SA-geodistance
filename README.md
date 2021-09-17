@@ -26,7 +26,7 @@
 
 | Author | Oluwaseun Remi-Omosowon |
 | --- | --- |
-| App Version | 1.2.0 |
+| App Version | 1.2.1 |
 | Vendor Products | <ul><li>vincenty-0.1.4 - public domain license </li><li>haversine-2.3.0 - MIT License</li><li>SDK for Python 1.6.14</li></ul> |
 | Support-addon | This add-on only needs to be installed on the search heads only (Either standalone or dedicated/clustered)|
 
@@ -47,9 +47,11 @@ Includes:
 
 ##### About this release
 
-Version 1.2.0 of the SA-geodistance is compatible with:
+Version 1.2.1 of the SA-geodistance is compatible with Splunk Enterprise 8.x, Splunk Cloud 7.x and Splunk Cloud 8.x.
+It will also work with later versions of Splunk 7.x that supports Python3. This version removes support for Python2.  
 
-| Splunk Enterprise versions | 6.x, 7.x, 8.x |
+| Splunk Enterprise versions | 7.3+, 8.x |
+| Splunk Cloud  | 7.x, 8.x |
 | --- | --- |
 | CIM | Not Applicable |
 | Platforms | Platform independent |
